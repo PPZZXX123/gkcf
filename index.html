@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分数查询系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36BFFA',
+                        neutral: '#F5F7FA',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .bg-gradient-primary {
+                background: linear-gradient(135deg, #165DFF 0%, #36BFFA 100%);
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 10px 10px -5px rgba(22, 93, 255, 0.04);
+            }
+            .score-item {
+                transition: all 0.3s ease;
+            }
+            .score-item:hover {
+                background-color: rgba(22, 93, 255, 0.05);
+            }
+            .score-bar {
+                height: 8px;
+                border-radius: 4px;
+                transition: width 1s ease;
+            }
+            .class-rank {
+                transition: all 0.3s ease;
+            }
+            .perfect-score {
+                animation: pulse 2s infinite;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-neutral min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-graduation-cap text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-dark">分数查询系统</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#" class="text-dark hover:text-primary transition-colors duration-200">首页</a>
+                <a href="#" class="text-dark hover:text-primary transition-colors duration-200">历史记录</a>
+                <a href="#" class="text-dark hover:text-primary transition-colors duration-200">帮助中心</a>
+            </nav>
+            <button class="md:hidden text-dark focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-12">
+        <div class="max-w-3xl mx-auto">
+            <!-- 标题区域 -->
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.8rem,5vw,2.5rem)] font-bold text-dark mb-4 text-shadow">欢迎使用分数查询系统</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto text-lg">输入您的信息，点击开始查询，即可获取所有科目的随机生成分数结果。本系统仅供娱乐使用。</p>
+            </div>
+
+            <!-- 查询卡片 -->
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-10 card-hover">
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-dark mb-6 flex items-center">
+                        <i class="fa fa-search text-primary mr-2"></i>
+                        查询信息
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+                            <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" placeholder="请输入姓名">
+                        </div>
+                        <div>
+                            <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">学号/考号</label>
+                            <input type="text" id="studentId" maxlength="8" pattern="[0-9]{8}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200" placeholder="请输入8位考号">
+                            <p class="text-xs text-gray-500 mt-1">考号必须为8位数字</p>
+                        </div>
+                        <div>
+                            <label for="class" class="block text-sm font-medium text-gray-700 mb-1">班级</label>
+                            <select id="class" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200">
+                                <option value="1">一班</option>
+                                <option value="2">二班</option>
+                                <option value="3">三班</option>
+                                <option value="4">四班</option>
+                                <option value="5">五班</option>
+                                <option value="6">六班</option>
+                                <option value="7">七班</option>
+                                <option value="8">八班</option>
+                                <option value="9">九班</option>
+                                <option value="10">十班</option>
+                                <option value="11">十一班</option>
+                                <option value="12">十二班</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="studentType" class="block text-sm font-medium text-gray-700 mb-1">文理分科</label>
+                            <select id="studentType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200">
+                                <option value="science">理科</option>
+                                <option value="arts">文科</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="queryBtn" class="bg-gradient-primary text-white px-8 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
+                        <i class="fa fa-search mr-2"></i>
+                        开始查询
+                    </button>
+                </div>
+            </div>
+
+            <!-- 结果卡片 -->
+            <div id="resultCard" class="bg-white rounded-xl shadow-lg p-8 mb-10 opacity-0 transform translate-y-4 transition-all duration-500 hidden">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-semibold text-dark mb-2">查询结果</h3>
+                    <p class="text-gray-500 text-sm" id="queryDate">2025年6月8日</p>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="grid grid-cols-3 gap-4 w-full max-w-md mx-auto mb-6">
+                        <div class="bg-neutral rounded-lg p-3">
+                            <p class="text-gray-500 text-sm mb-1">姓名</p>
+                            <p id="resultName" class="font-medium">--</p>
+                        </div>
+                        <div class="bg-neutral rounded-lg p-3">
+                            <p class="text-gray-500 text-sm mb-1">学号/考号</p>
+                            <p id="resultStudentId" class="font-medium">--</p>
+                        </div>
+                        <div class="bg-neutral rounded-lg p-3">
+                            <p class="text-gray-500 text-sm mb-1">班级</p>
+                            <p id="resultClass" class="font-medium">--</p>
+                        </div>
+                        <div class="bg-neutral rounded-lg p-3 col-span-3">
+                            <p class="text-gray-500 text-sm mb-1">分科类型</p>
+                            <p id="resultStudentType" class="font-medium">--</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 班级排名信息 -->
+                <div id="classRankInfo" class="bg-primary/5 rounded-lg p-4 border border-primary/20 mb-6 hidden">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mr-3">
+                            <i class="fa fa-trophy text-primary"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-dark">班级排名参考</p>
+                            <p class="text-sm text-gray-600" id="classRankDescription">一班的整体成绩最好，十二班的整体成绩最差。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 所有科目分数列表 -->
+                <div class="mb-8">
+                    <h4 class="font-medium text-dark mb-4 flex items-center">
+                        <i class="fa fa-list-ul text-primary mr-2"></i>
+                        各科成绩
+                    </h4>
+                    <div id="scoresList" class="space-y-4">
+                        <!-- 成绩项将通过JS动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 总分 -->
+                <div class="bg-primary/5 rounded-lg p-4 border border-primary/20">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-gray-500 text-sm">总分 (满分750)</p>
+                            <p id="totalScore" class="text-xl font-bold text-primary">--</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">平均分</p>
+                            <p id="averageScore" class="text-xl font-bold text-primary">--</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div id="totalScoreBar" class="bg-primary h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 班级对比 -->
+                <div id="classComparison" class="mt-6 hidden">
+                    <div class="bg-neutral rounded-lg p-4">
+                        <h4 class="font-medium text-dark mb-3 flex items-center">
+                            <i class="fa fa-chart-bar text-primary mr-2"></i>
+                            班级对比
+                        </h4>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>班级平均分</span>
+                                    <span id="classAvgScore" class="font-medium">--</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="classAvgBar" class="bg-blue-500 h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>你的分数</span>
+                                    <span id="yourScore" class="font-medium">--</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="yourScoreBar" class="bg-primary h-2 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-sm text-gray-600" id="comparisonAnalysis">
+                            --
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 成绩分析 -->
+                <div class="mt-6">
+                    <div class="bg-neutral rounded-lg p-4">
+                        <h4 class="font-medium text-dark mb-2">成绩分析</h4>
+                        <p id="resultAnalysis" class="text-gray-600 text-sm">
+                            --
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i class="fa fa-graduation-cap mr-2"></i>
+                        分数查询系统
+                    </h3>
+                    <p class="text-gray-400 text-sm">
+                        本系统提供随机分数生成服务，仅供娱乐使用，不代表真实成绩。
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">首页</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">历史记录</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">帮助中心</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="flex items-center"><i class="fa fa-envelope-o mr-2"></i> support@example.com</li>
+                        <li class="flex items-center"><i class="fa fa-phone mr-2"></i> 400-123-4567</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+                <p>© 2025 分数查询系统 版权所有</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 设置当前日期
+        document.getElementById('queryDate').textContent = new Date().toLocaleDateString('zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // 所有科目列表，包含满分信息
+        const commonSubjects = [
+            { id: 'chinese', name: '语文', fullScore: 150, type: 'common' },
+            { id: 'math', name: '数学', fullScore: 150, type: 'common' },
+            { id: 'english', name: '英语', fullScore: 150, type: 'common' }
+        ];
+
+        const scienceSubjects = [
+            { id: 'physics', name: '物理', fullScore: 100, type: 'science' },
+            { id: 'chemistry', name: '化学', fullScore: 100, type: 'science' },
+            { id: 'biology', name: '生物', fullScore: 100, type: 'science' }
+        ];
+
+        const artsSubjects = [
+            { id: 'politics', name: '政治', fullScore: 100, type: 'arts' },
+            { id: 'history', name: '历史', fullScore: 100, type: 'arts' },
+            { id: 'geography', name: '地理', fullScore: 100, type: 'arts' }
+        ];
+
+        // 班级排名信息
+        const classRanks = {
+            1: { avgScore: 675, description: "一班整体成绩优秀，班级平均分为675分。" },
+            2: { avgScore: 650, description: "二班整体成绩良好，班级平均分为650分。" },
+            3: { avgScore: 625, description: "三班整体成绩良好，班级平均分为625分。" },
+            4: { avgScore: 600, description: "四班整体成绩中等偏上，班级平均分为600分。" },
+            5: { avgScore: 575, description: "五班整体成绩中等偏上，班级平均分为575分。" },
+            6: { avgScore: 550, description: "六班整体成绩中等，班级平均分为550分。" },
+            7: { avgScore: 525, description: "七班整体成绩中等，班级平均分为525分。" },
+            8: { avgScore: 500, description: "八班整体成绩中等偏下，班级平均分为500分。" },
+            9: { avgScore: 475, description: "九班整体成绩中等偏下，班级平均分为475分。" },
+            10: { avgScore: 450, description: "十班整体成绩较差，班级平均分为450分。" },
+            11: { avgScore: 425, description: "十一班整体成绩较差，班级平均分为425分。" },
+            12: { avgScore: 400, description: "十二班整体成绩较差，班级平均分为400分。" }
+        };
+
+        // 查询按钮点击事件
+        document.getElementById('queryBtn').addEventListener('click', function() {
+            const name = document.getElementById('name').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+            const classValue = document.getElementById('class').value;
+            const studentType = document.getElementById('studentType').value;
+
+            // 表单验证
+            if (!name) {
+                alert('请输入姓名');
+                return;
+            }
+            
+            // 考号验证
+            const studentIdPattern = /^\d{8}$/;
+            if (!studentIdPattern.test(studentId)) {
+                alert('请输入有效的8位考号');
+                return;
+            }
+
+            // 显示结果卡片
+            const resultCard = document.getElementById('resultCard');
+            resultCard.classList.remove('hidden');
+            
+            // 显示加载状态
+            document.getElementById('resultName').textContent = name;
+            document.getElementById('resultStudentId').textContent = studentId;
+            document.getElementById('resultClass').textContent = `${classValue}班`;
+            document.getElementById('resultStudentType').textContent = studentType === 'science' ? '理科' : '文科';
+            document.getElementById('scoresList').innerHTML = '';
+            document.getElementById('totalScore').textContent = '--';
+            document.getElementById('averageScore').textContent = '--';
+            document.getElementById('resultAnalysis').textContent = '正在分析成绩...';
+            document.getElementById('totalScoreBar').style.width = '0%';
+            document.getElementById('classRankInfo').classList.remove('hidden');
+            document.getElementById('classRankDescription').textContent = classRanks[classValue].description;
+            document.getElementById('classComparison').classList.remove('hidden');
+            document.getElementById('classAvgScore').textContent = `${classRanks[classValue].avgScore}/750`;
+            document.getElementById('classAvgBar').style.width = '0%';
+            document.getElementById('yourScore').textContent = '--';
+            document.getElementById('yourScoreBar').style.width = '0%';
+            document.getElementById('comparisonAnalysis').textContent = '正在计算对比分析...';
+            
+            // 重置动画
+            resultCard.classList.remove('opacity-0', 'translate-y-4');
+            
+            // 根据学生类型选择科目
+            const selectedSubjects = [...commonSubjects, ...(studentType === 'science' ? scienceSubjects : artsSubjects)];
+            
+            // 模拟加载过程
+            setTimeout(() => {
+                // 为每个科目生成随机分数，根据班级排名调整
+                let totalScore = 0;
+                const scores = {};
+                const isPerfectScore = studentId === '88888888';
+                
+                // 生成各科成绩
+                selectedSubjects.forEach((subject, index) => {
+                    setTimeout(() => {
+                        let score;
+                        
+                        // 如果考号是88888888，则所有科目都是满分
+                        if (isPerfectScore) {
+                            score = subject.fullScore;
+                        } else {
+                            // 根据满分和班级系数生成随机分数，确保不超过满分
+                            const maxScore = subject.fullScore;
+                            
+                            // 主科分数范围
+                            let minPercent, maxPercent;
+                            
+                            if (subject.type === 'common') {
+                                // 语文、数学、英语作为主科，分数范围更广
+                                minPercent = 0.30 + ((12 - classValue) * 0.03);
+                                maxPercent = 0.60 + ((12 - classValue) * 0.03) + classFactor * 0.35;
+                            } else if ((studentType === 'science' && subject.type === 'science') || 
+                                      (studentType === 'arts' && subject.type === 'arts')) {
+                                // 理科生的理科科目或文科生的文科科目，分数会偏高
+                                minPercent = 0.40 + ((12 - classValue) * 0.03);
+                                maxPercent = 0.70 + ((12 - classValue) * 0.03) + classFactor * 0.25;
+                            } else {
+                                // 非选择科目的分数会偏低
+                                minPercent = 0.20 + ((12 - classValue) * 0.03);
+                                maxPercent = 0.50 + ((12 - classValue) * 0.03) + classFactor * 0.15;
+                            }
+                            
+                            // 确保生成的分数不超过该科目的满分
+                            score = Math.floor(Math.min(Math.random() * (maxPercent - minPercent) * maxScore + minPercent * maxScore, maxScore));
+                        }
+                        
+                        scores[subject.id] = score;
+                        totalScore += score;
+                        
+                        // 创建成绩项元素
+                        const scoreItem = document.createElement('div');
+                        scoreItem.className = `score-item flex flex-col p-3 border border-gray-200 rounded-lg ${isPerfectScore ? 'perfect-score' : ''}`;
+                        
+                        // 满分成绩的特殊样式
+                        const isFullScore = score === subject.fullScore;
+                        const scoreColor = isFullScore ? 'text-green-600' : 'text-primary';
+                        const gradeClass = isFullScore ? 'text-green-600 font-bold' : getGradeClass(score, subject.fullScore);
+                        
+                        scoreItem.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex items-center">
+                                    <span class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+                                        <i class="fa fa-book"></i>
+                                    </span>
+                                    <span>${subject.name}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-lg font-bold ${scoreColor} mr-2">${score}</span>
+                                    <span class="text-sm text-gray-500">/${subject.fullScore}</span>
+                                    <span class="ml-3 text-sm ${gradeClass}">${isFullScore ? '满分' : getGrade(score, subject.fullScore)}</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                <div class="score-bar ${isFullScore ? 'bg-green-500' : 'bg-primary'} h-2 rounded-full" style="width: ${(score / subject.fullScore) * 100}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>0</span>
+                                <span>分数占比: ${((score / subject.fullScore) * 100).toFixed(1)}%</span>
+                                <span>${subject.fullScore}</span>
+                            </div>
+                        `;
+                        
+                        // 添加到列表中
+                        document.getElementById('scoresList').appendChild(scoreItem);
+                        
+                        // 计算平均分
+                        const averageScore = totalScore / (index + 1);
+                        
+                        // 更新总分和平均分
+                        document.getElementById('totalScore').textContent = totalScore;
+                        document.getElementById('averageScore').textContent = averageScore.toFixed(1);
+                        
+                        // 更新总分进度条
+                        if (index === selectedSubjects.length - 1) {
+                            setTimeout(() => {
+                                document.getElementById('totalScoreBar').style.width = `${(totalScore / 750) * 100}%`;
+                                document.getElementById('yourScore').textContent = `${totalScore}/750`;
+                                document.getElementById('classAvgBar').style.width = `${(classRanks[classValue].avgScore / 750) * 100}%`;
+                                
+                                setTimeout(() => {
+                                    document.getElementById('yourScoreBar').style.width = `${(totalScore / 750) * 100}%`;
+                                    updateAnalysis(totalScore, scores, studentType, selectedSubjects, isPerfectScore);
+                                    updateComparisonAnalysis(totalScore, classValue, isPerfectScore);
+                                }, 500);
+                            }, 500);
+                        }
+                    }, index * 300); // 每个科目显示间隔300ms
+                });
+                
+            }, 1000);
+        });
+
+        // 根据分数获取等级
+        function getGrade(score, fullScore) {
+            const percentage = score / fullScore;
+            if (percentage >= 0.9) return '优秀';
+            if (percentage >= 0.8) return '良好';
+            if (percentage >= 0.7) return '中等';
+            if (percentage >= 0.6) return '及格';
+            return '不及格';
+        }
+        
+        // 根据分数获取等级样式
+        function getGradeClass(score, fullScore) {
+            const percentage = score / fullScore;
+            if (percentage >= 0.9) return 'text-green-600';
+            if (percentage >= 0.8) return 'text-blue-600';
+            if (percentage >= 0.7) return 'text-yellow-600';
+            if (percentage >= 0.6) return 'text-orange-600';
+            return 'text-red-600';
+        }
+        
+        // 更新成绩分析
+        function updateAnalysis(totalScore, scores, studentType, selectedSubjects, isPerfectScore) {
+            let analysis = '';
+            
+            if (isPerfectScore) {
+                analysis = '恭喜你获得了全科满分的优异成绩！这是极其罕见的成就，充分展示了你的卓越才华和不懈努力。继续保持，未来必将取得更大的成功！';
+            } else {
+                const averageScore = totalScore / selectedSubjects.length;
+                const percentage = totalScore / 750;
+                
+                if (percentage >= 0.9) {
+                    analysis = '你的成绩极其优异，在所有科目中都表现出色！继续保持这种学习状态，未来可期。';
+                } else if (percentage >= 0.8) {
+                    analysis = '你的成绩非常优秀，基础知识扎实，学习能力强。建议针对较弱的科目进行有针对性的提高，争取更上一层楼。';
+                } else if (percentage >= 0.7) {
+                    analysis = '你的成绩良好，对知识有较好的掌握。可以多花些时间在薄弱科目上，进一步提高整体成绩。';
+                } else if (percentage >= 0.6) {
+                    analysis = '你的成绩中等，需要加强基础知识的学习。建议制定学习计划，系统地提高各科成绩。';
+                } else {
+                    analysis = '你的成绩不太理想，可能需要调整学习方法和态度。建议从基础开始，逐个科目进行巩固和提高。';
+                }
+                
+                // 找出最高分和最低分科目
+                let maxScore = -1;
+                let minScore = Infinity;
+                let bestSubject = '';
+                let worstSubject = '';
+                
+                selectedSubjects.forEach(subject => {
+                    const score = scores[subject.id];
+                    if (score > maxScore) {
+                        maxScore = score;
+                        bestSubject = subject.name;
+                    }
+                    if (score < minScore) {
+                        minScore = score;
+                        worstSubject = subject.name;
+                    }
+                });
+                
+                analysis += ` 你的最强科目是${bestSubject}，最弱科目是${worstSubject}。`;
+                
+                // 添加总分评价
+                analysis += ` 总分为${totalScore}分，占满分的${(percentage * 100).toFixed(1)}%，平均分为${averageScore.toFixed(1)}分。`;
+                
+                // 添加分科评价
+                if (studentType === 'science') {
+                    const scienceTotal = scores.physics + scores.chemistry + scores.biology;
+                    const scienceAvg = scienceTotal / 3;
+                    analysis += ` 你的理科总分为${scienceTotal}分，平均分为${scienceAvg.toFixed(1)}分。`;
+                    
+                    if (scienceAvg >= 85) {
+                        analysis += ' 理科成绩非常优秀，保持优势！';
+                    } else if (scienceAvg >= 70) {
+                        analysis += ' 理科成绩良好，还有提升空间。';
+                    } else {
+                        analysis += ' 理科成绩有待提高，需要加强基础知识学习。';
+                    }
+                } else {
+                    const artsTotal = scores.politics + scores.history + scores.geography;
+                    const artsAvg = artsTotal / 3;
+                    analysis += ` 你的文科总分为${artsTotal}分，平均分为${artsAvg.toFixed(1)}分。`;
+                    
+                    if (artsAvg >= 85) {
+                        analysis += ' 文科成绩非常优秀，保持优势！';
+                    } else if (artsAvg >= 70) {
+                        analysis += ' 文科成绩良好，还有提升空间。';
+                    } else {
+                        analysis += ' 文科成绩有待提高，需要加强基础知识学习。';
+                    }
+                }
+            }
+            
+            // 更新分析内容
+            document.getElementById('resultAnalysis').textContent = analysis;
+        }
+        
+        // 更新班级对比分析
+        function updateComparisonAnalysis(score, classValue, isPerfectScore) {
+            const classAvg = classRanks[classValue].avgScore;
+            const difference = score - classAvg;
+            let comparison = '';
+            
+            if (isPerfectScore) {
+                comparison = '恭喜你获得了满分的优异成绩！你的分数远远超过班级平均分，在班级中独占鳌头，是同学们学习的榜样！';
+            } else if (difference >= 75) {
+                comparison = `你的分数远高于班级平均分，在班级中处于顶尖水平，继续保持！`;
+            } else if (difference >= 30) {
+                comparison = `你的分数高于班级平均分，表现优秀，继续加油！`;
+            } else if (difference >= -30) {
+                comparison = `你的分数接近班级平均分，处于班级中等水平，还有提升空间。`;
+            } else if (difference >= -75) {
+                comparison = `你的分数略低于班级平均分，需要更加努力，争取达到班级平均水平。`;
+            } else {
+                comparison = `你的分数远低于班级平均分，建议制定学习计划，逐步提高成绩。`;
+            }
+            
+            document.getElementById('comparisonAnalysis').textContent = comparison;
+        }
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('py-2', 'shadow');
+                header.classList.remove('py-4');
+            } else {
+                header.classList.add('py-4');
+                header.classList.remove('py-2', 'shadow');
+            }
+        });
+    </script>
+</body>
+</html>
+    
